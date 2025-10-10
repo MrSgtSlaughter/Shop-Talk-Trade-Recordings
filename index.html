@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Local 449 Recorder">
+    <meta name="theme-color" content="#000000">
+    <title>Local 449 Voice Recorder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #111111 0%, #333333 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000000 0%, #222222 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #FFB612;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #FFB612;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #FFB612;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #FFB612;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            color: #000;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 15px rgba(255, 182, 18, 0.4);
+        }
+
+        .recorder-display {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            margin: 20px 0;
+            border: 3px solid #FFB612;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .timer {
+            font-size: 4em;
+            font-weight: bold;
+            color: #FFB612;
+            margin-bottom: 20px;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(255, 182, 18, 0.5);
+        }
+
+        .timer.recording {
+            color: #e74c3c;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .status {
+            font-size: 1.1em;
+            color: #FFB612;
+            margin-bottom: 10px;
+            min-height: 30px;
+        }
+
+        .status.uploading {
+            color: #3498db;
+        }
+
+        .status.success {
+            color: #2ecc71;
+        }
+
+        .status.error {
+            color: #e74c3c;
+        }
+
+        .record-btn {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: none;
+            font-size: 4em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .record-btn.ready {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .record-btn.recording {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            animation: recordPulse 2s infinite;
+        }
+
+        .record-btn.disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        @keyframes recordPulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(39, 174, 96, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+        }
+
+        .record-btn:active:not(.disabled) {
+            transform: scale(0.95);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 140px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FFB612, #D4AF37);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 182, 18, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFB612, #2ecc71);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .instructions {
+            background: rgba(255, 182, 18, 0.1);
+            border: 2px solid #FFB612;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            max-width: 500px;
+        }
+
+        .instructions h3 {
+            color: #FFB612;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .instructions strong {
+            color: #FFB612;
+        }
+
+        .footer {
+            background: #000;
+            color: #FFB612;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85em;
+            margin-top: auto;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 60px;
+            gap: 3px;
+            margin: 20px 0;
+        }
+
+        .visualizer-bar {
+            width: 5px;
+            background: linear-gradient(to top, #FFB612, #e74c3c);
+            border-radius: 3px;
+            transition: height 0.1s ease;
+            min-height: 3px;
+        }
+
+        @media (max-width: 480px) {
+            .logo { font-size: 2em; }
+            .subtitle { font-size: 1em; }
+            .timer { font-size: 3em; }
+            .record-btn { width: 150px; height: 150px; font-size: 3em; }
+            .btn { min-width: 120px; padding: 12px 20px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">LOCAL 449</div>
+        <div class="subtitle">Instructor Voice Recorder</div>
+    </div>
+
+    <div class="container">
+        <div class="form-group">
+            <label for="instructorName">Instructor Name *</label>
+            <input type="text" id="instructorName" placeholder="Enter your full name" autocomplete="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="apprenticeGroup">Apprentice Group *</label>
+            <input type="text" id="apprenticeGroup" placeholder="e.g., HVAC Cohort A" required>
+        </div>
+
+        <div class="form-group">
+            <label for="courseName">Course/Session Name *</label>
+            <input type="text" id="courseName" placeholder="e.g., HVAC Systems 101" required>
+        </div>
+
+        <div class="recorder-display">
+            <div class="timer" id="timer">00:00</div>
+            <div class="status" id="status">Ready to Record</div>
+            <div class="visualizer" id="visualizer" style="display: none;"></div>
+            <button class="record-btn ready" id="recordBtn">🎤</button>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="uploadBtn" disabled>☁️ Upload to Dashboard</button>
+            <button class="btn btn-danger" id="deleteBtn" disabled>🗑️ Delete</button>
+        </div>
+
+        <div class="instructions">
+            <h3>📱 Add to Home Screen</h3>
+            <ol>
+                <li><strong>iPhone:</strong> Tap Share button → "Add to Home Screen"</li>
+                <li><strong>Android Chrome:</strong> Tap menu (⋮) → "Add to Home screen"</li>
+            </ol>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.9;">
+                💡 Maximum recording time: 15 minutes<br>
+                💡 Fill out all fields before recording<br>
+                💡 Recordings upload automatically after stopping
+            </p>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 Steamfitters Local 449 • Voice Recorder Tool
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://dfneumnqaxfdmtkzqezm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmV1bW5xYXhmZG10a3pxZXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwOTUyNDksImV4cCI6MjA3NTY3MTI0OX0.XM-zDV1Ne8izUJFDGR6_6jRa5HHqCPc9Jho9f5YsGNM';
+
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const app = {
+            mediaRecorder: null,
+            audioChunks: [],
+            audioBlob: null,
+            startTime: null,
+            timerInterval: null,
+            stream: null,
+            audioContext: null,
+            analyser: null,
+            visualizerInterval: null,
+            maxDuration: 15 * 60 * 1000,
+            recordingId: null,
+
+            init() {
+                this.createVisualizer();
+                
+                document.getElementById('recordBtn').addEventListener('click', () => {
+                    if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') {
+                        this.startRecording();
+                    } else {
+                        this.stopRecording();
+                    }
+                });
+
+                document.getElementById('uploadBtn').addEventListener('click', () => this.uploadRecording());
+                document.getElementById('deleteBtn').addEventListener('click', () => this.deleteRecording());
+
+                const savedInstructor = localStorage.getItem('local449_instructor');
+                const savedGroup = localStorage.getItem('local449_group');
+                const savedCourse = localStorage.getItem('local449_course');
+                
+                if (savedInstructor) document.getElementById('instructorName').value = savedInstructor;
+                if (savedGroup) document.getElementById('apprenticeGroup').value = savedGroup;
+                if (savedCourse) document.getElementById('courseName').value = savedCourse;
+
+                document.getElementById('instructorName').addEventListener('input', (e) => {
+                    localStorage.setItem('local449_instructor', e.target.value);
+                });
+                document.getElementById('apprenticeGroup').addEventListener('input', (e) => {
+                    localStorage.setItem('local449_group', e.target.value);
+                });
+                document.getElementById('courseName').addEventListener('input', (e) => {
+                    localStorage.setItem('local449_course', e.target.value);
+                });
+            },
+
+            createVisualizer() {
+                const visualizer = document.getElementById('visualizer');
+                for (let i = 0; i < 20; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'visualizer-bar';
+                    visualizer.appendChild(bar);
+                }
+            },
+
+            updateVisualizer() {
+                if (!this.analyser) return;
+                
+                const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                const bars = document.querySelectorAll('.visualizer-bar');
+                const step = Math.floor(dataArray.length / bars.length);
+                
+                bars.forEach((bar, i) => {
+                    const value = dataArray[i * step];
+                    const height = (value / 255) * 50;
+                    bar.style.height = Math.max(3, height) + 'px';
+                });
+            },
+
+            validateForm() {
+                const instructor = document.getElementById('instructorName').value.trim();
+                const group = document.getElementById('apprenticeGroup').value.trim();
+                const course = document.getElementById('courseName').value.trim();
+
+                if (!instructor || !group || !course) {
+                    this.updateStatus('Please fill in all required fields (*)', 'error');
+                    return false;
+                }
+                return true;
+            },
+
+            async startRecording() {
+                if (!this.validateForm()) return;
+
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        } 
+                    });
+
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    const source = this.audioContext.createMediaStreamSource(this.stream);
+                    source.connect(this.analyser);
+                    this.analyser.fftSize = 256;
+
+                    this.audioChunks = [];
+                    this.mediaRecorder = new MediaRecorder(this.stream, {
+                        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4'
+                    });
+
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            this.audioChunks.push(event.data);
+                        }
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                        document.getElementById('uploadBtn').disabled = false;
+                        document.getElementById('deleteBtn').disabled = false;
+                        this.uploadRecording();
+                    };
+
+                    this.mediaRecorder.start(1000);
+                    this.startTime = Date.now();
+                    this.startTimer();
+                    this.updateUI('recording');
+
+                    document.getElementById('visualizer').style.display = 'flex';
+                    this.visualizerInterval = setInterval(() => this.updateVisualizer(), 50);
+
+                    setTimeout(() => {
+                        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                            this.stopRecording();
+                            alert('Maximum recording time (15 minutes) reached');
+                        }
+                    }, this.maxDuration);
+
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    this.updateStatus('Could not access microphone. Please grant permission.', 'error');
+                }
+            },
+
+            stopRecording() {
+                if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                    this.mediaRecorder.stop();
+                    this.stopTimer();
+                    this.updateUI('stopped');
+                    
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    if (this.audioContext) {
+                        this.audioContext.close();
+                    }
+
+                    if (this.visualizerInterval) {
+                        clearInterval(this.visualizerInterval);
+                    }
+
+                    document.getElementById('visualizer').style.display = 'none';
+                }
+            },
+
+            startTimer() {
+                this.timerInterval = setInterval(() => {
+                    const elapsed = Date.now() - this.startTime;
+                    const minutes = Math.floor(elapsed / 60000);
+                    const seconds = Math.floor((elapsed % 60000) / 1000);
+                    document.getElementById('timer').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }, 100);
+            },
+
+            stopTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+            },
+
+            updateUI(state) {
+                const recordBtn = document.getElementById('recordBtn');
+                const timer = document.getElementById('timer');
+
+                if (state === 'recording') {
+                    recordBtn.className = 'record-btn recording';
+                    recordBtn.textContent = '⏹️';
+                    this.updateStatus('Recording...', '');
+                    timer.classList.add('recording');
+                } else if (state === 'stopped') {
+                    recordBtn.className = 'record-btn ready';
+                    recordBtn.textContent = '🎤';
+                    timer.classList.remove('recording');
+                }
+            },
+
+            updateStatus(message, type) {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = 'status ' + type;
+            },
+
+            async uploadRecording() {
+                if (!this.audioBlob) {
+                    this.updateStatus('No recording to upload', 'error');
+                    return;
+                }
+
+                this.updateStatus('Uploading...', 'uploading');
+                document.getElementById('progressBar').classList.add('active');
+
+                try {
+                    const instructor = document.getElementById('instructorName').value.trim();
+                    const group = document.getElementById('apprenticeGroup').value.trim();
+                    const course = document.getElementById('courseName').value.trim();
+                    const timestamp = new Date().toISOString();
+                    const duration = Math.floor((Date.now() - this.startTime) / 1000);
+                    
+                    const filename = `${instructor.replace(/\s+/g, '_')}_${course.replace(/\s+/g, '_')}_${Date.now()}.webm`;
+                    
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('recordings')
+                        .upload(filename, this.audioBlob, {
+                            contentType: 'audio/webm'
+                        });
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: urlData } = supabase.storage
+                        .from('recordings')
+                        .getPublicUrl(filename);
+
+                    const { data: dbData, error: dbError } = await supabase
+                        .from('instructor_recordings')
+                        .insert([{
+                            instructor_name: instructor,
+                            apprentice_group: group,
+                            course_name: course,
+                            recording_url: urlData.publicUrl,
+                            filename: filename,
+                            duration_seconds: duration,
+                            file_size: this.audioBlob.size,
+                            recorded_at: timestamp
+                        }])
+                        .select();
+
+                    if (dbError) throw dbError;
+
+                    document.getElementById('progressFill').style.width = '100%';
+                    setTimeout(() => {
+                        this.updateStatus('✅ Upload successful!', 'success');
+                        document.getElementById('progressBar').classList.remove('active');
+                        document.getElementById('progressFill').style.width = '0%';
+                        setTimeout(() => this.deleteRecording(true), 2000);
+                    }, 500);
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    this.updateStatus('Upload failed: ' + error.message, 'error');
+                    document.getElementById('progressBar').classList.remove('active');
+                }
+            },
+
+            deleteRecording(silent = false) {
+                if (!silent && !confirm('Delete this recording?')) return;
+                
+                this.audioBlob = null;
+                this.audioChunks = [];
+                document.getElementById('timer').textContent = '00:00';
+                this.updateStatus('Ready to Record', '');
+                document.getElementById('uploadBtn').disabled = true;
+                document.getElementById('deleteBtn').disabled = true;
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
