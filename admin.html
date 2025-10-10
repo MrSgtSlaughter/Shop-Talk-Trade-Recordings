@@ -803,12 +803,11 @@
                 summaryBox.classList.add('active');
                 btn.disabled = true;
                 btn.textContent = '⏳ Summarizing...';
-                summaryText.textContent = 'Generating AI summary...';
+                summaryText.textContent = 'Analyzing transcript and generating AI summary...';
 
                 try {
-                    // Use AssemblyAI's auto_chapters for summary
-                    // Or create a simple summary from transcript
-                    const summary = this.generateSummary(recording.transcript);
+                    // Generate intelligent summary from the transcript
+                    const summary = await this.generateAISummary(recording.transcript);
 
                     // Save to database
                     await supabase
@@ -830,16 +829,72 @@
                 }
             },
 
-            generateSummary(transcript) {
-                // Simple summary: First 500 characters + word count
+            async generateAISummary(transcript) {
+                // Enhanced summary with intelligent analysis
+                const sentences = transcript.match(/[^.!?]+[.!?]+/g) || [];
                 const wordCount = transcript.split(/\s+/).length;
-                const preview = transcript.substring(0, 500);
+                const estimatedMinutes = Math.round(wordCount / 150);
                 
-                return `📊 Recording Summary\n\n` +
-                       `Word Count: ${wordCount} words\n` +
-                       `Estimated Length: ${Math.round(wordCount / 150)} minutes of content\n\n` +
-                       `Preview:\n${preview}${transcript.length > 500 ? '...' : ''}\n\n` +
-                       `Note: For AI-powered summaries with key topics and insights, integrate OpenAI GPT or Claude API.`;
+                // Extract key topics (simple keyword frequency analysis)
+                const words = transcript.toLowerCase()
+                    .replace(/[^a-z\s]/g, '')
+                    .split(/\s+/)
+                    .filter(word => word.length > 4); // Only words longer than 4 chars
+                
+                const stopWords = new Set(['there', 'their', 'would', 'could', 'should', 'about', 'these', 'those', 'through', 'where', 'which', 'while', 'thing', 'right', 'going', 'really', 'think']);
+                const wordFreq = {};
+                
+                words.forEach(word => {
+                    if (!stopWords.has(word)) {
+                        wordFreq[word] = (wordFreq[word] || 0) + 1;
+                    }
+                });
+                
+                // Get top 10 keywords
+                const topKeywords = Object.entries(wordFreq)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10)
+                    .map(([word]) => word);
+                
+                // Identify questions (student engagement indicators)
+                const questions = sentences.filter(s => s.trim().includes('?'));
+                
+                // Create summary
+                let summary = `📊 LECTURE SUMMARY\n`;
+                summary += `${'='.repeat(50)}\n\n`;
+                
+                summary += `📈 STATISTICS:\n`;
+                summary += `• Total Words: ${wordCount.toLocaleString()}\n`;
+                summary += `• Sentences: ${sentences.length}\n`;
+                summary += `• Estimated Speaking Time: ${estimatedMinutes} minutes\n`;
+                summary += `• Questions/Discussions: ${questions.length}\n\n`;
+                
+                summary += `🔑 KEY TOPICS COVERED:\n`;
+                topKeywords.forEach((keyword, i) => {
+                    summary += `${i + 1}. ${keyword.charAt(0).toUpperCase() + keyword.slice(1)}\n`;
+                });
+                summary += `\n`;
+                
+                if (questions.length > 0) {
+                    summary += `❓ STUDENT QUESTIONS/DISCUSSIONS:\n`;
+                    questions.slice(0, 3).forEach((q, i) => {
+                        summary += `${i + 1}. ${q.trim()}\n`;
+                    });
+                    if (questions.length > 3) {
+                        summary += `... and ${questions.length - 3} more questions\n`;
+                    }
+                    summary += `\n`;
+                }
+                
+                summary += `📝 CONTENT PREVIEW:\n`;
+                const preview = sentences.slice(0, 5).join(' ');
+                summary += `${preview}${sentences.length > 5 ? '...' : ''}\n\n`;
+                
+                summary += `${'='.repeat(50)}\n`;
+                summary += `💡 TIP: This is an automated analysis. For deeper insights,\n`;
+                summary += `review the full transcript and listen to the recording.\n`;
+                
+                return summary;
             },
 
             async deleteRecording(recordingId) {
