@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local 449 Voice Recorder - Instructions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .page {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 4px solid #FFB612;
+        }
+
+        .logo-section {
+            background: linear-gradient(135deg, #000000 0%, #222222 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: #FFB612;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #FFB612;
+            font-size: 1.3em;
+        }
+
+        h1 {
+            color: #000;
+            font-size: 2.2em;
+            margin-top: 20px;
+        }
+
+        .qr-section {
+            text-align: center;
+            background: linear-gradient(135deg, #FFB612 0%, #D4AF37 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(255, 182, 18, 0.3);
+        }
+
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .qr-code img {
+            display: block;
+            width: 300px;
+            height: 300px;
+        }
+
+        .qr-instruction {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .url-text {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .instructions {
+            margin: 30px 0;
+        }
+
+        .instruction-box {
+            background: #f8f9fa;
+            border-left: 5px solid #FFB612;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .instruction-box h2 {
+            color: #FFB612;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .steps {
+            margin-left: 20px;
+        }
+
+        .steps li {
+            margin: 15px 0;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .steps strong {
+            color: #000;
+            font-weight: 700;
+        }
+
+        .platform-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .tips {
+            background: #e8f5e8;
+            border: 2px solid #2ecc71;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .tips h3 {
+            color: #2ecc71;
+            margin-bottom: 15px;
+        }
+
+        .tips ul {
+            margin-left: 20px;
+        }
+
+        .tips li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            color: #666;
+        }
+
+        .support-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .support-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .page {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 20px;
+            }
+            .logo {
+                font-size: 2em;
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+            .qr-code img {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">LOCAL 449</div>
+                <div class="subtitle">Steamfitters</div>
+            </div>
+            <h1>📱 Voice Recorder Instructions</h1>
+            <p style="font-size: 1.1em; color: #666; margin-top: 10px;">For Instructors</p>
+        </div>
+
+        <!-- QR CODE SECTION -->
+        <div class="qr-section">
+            <div class="qr-instruction">📸 Scan to Access Voice Recorder</div>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://mrsgtslaughter.github.io/Shop-Talk-Trade-Recordings/" 
+                     alt="QR Code for Voice Recorder">
+            </div>
+            <div class="url-text">
+                mrsgtslaughter.github.io/Shop-Talk-Trade-Recordings
+            </div>
+        </div>
+
+        <!-- INSTRUCTIONS -->
+        <div class="instructions">
+            <div class="instruction-box">
+                <h2><span class="platform-icon">📱</span>Step 1: Access the Recorder</h2>
+                <ul class="steps">
+                    <li><strong>Scan the QR code above</strong> with your phone's camera app</li>
+                    <li>OR type the URL into your phone's browser</li>
+                    <li>The recorder page will open in your browser</li>
+                </ul>
+            </div>
+
+            <div class="instruction-box">
+                <h2><span class="platform-icon">🍎</span>iPhone - Add to Home Screen</h2>
+                <ul class="steps">
+                    <li>Open the recorder page in <strong>Safari</strong></li>
+                    <li>Tap the <strong>Share button</strong> (square with arrow pointing up) at the bottom</li>
+                    <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                    <li>Tap <strong>"Add"</strong> in the top right</li>
+                    <li>✅ The recorder icon will appear on your home screen like an app!</li>
+                </ul>
+            </div>
+
+            <div class="instruction-box">
+                <h2><span class="platform-icon">🤖</span>Android - Add to Home Screen</h2>
+                <ul class="steps">
+                    <li>Open the recorder page in <strong>Chrome</strong></li>
+                    <li>Tap the <strong>menu button</strong> (three dots) in the top right</li>
+                    <li>Tap <strong>"Add to Home screen"</strong></li>
+                    <li>Enter a name (or keep "Local 449")</li>
+                    <li>Tap <strong>"Add"</strong></li>
+                    <li>✅ The recorder icon will appear on your home screen like an app!</li>
+                </ul>
+            </div>
+
+            <div class="instruction-box">
+                <h2><span class="platform-icon">🎤</span>Step 3: Using the Recorder</h2>
+                <ul class="steps">
+                    <li>Enter your <strong>full name</strong></li>
+                    <li>Enter the <strong>apprentice group</strong> (e.g., "HVAC Cohort A")</li>
+                    <li>Enter the <strong>course name</strong> (e.g., "Intro to HVAC Systems")</li>
+                    <li>Tap the <strong>🎤 microphone button</strong> to start recording</li>
+                    <li>Allow microphone access when prompted</li>
+                    <li>Speak your lecture notes (up to 15 minutes)</li>
+                    <li>Tap <strong>⏹️ Stop</strong> when finished</li>
+                    <li>✅ Your recording uploads automatically!</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TIPS -->
+        <div class="tips">
+            <h3>💡 Tips for Best Results</h3>
+            <ul>
+                <li>📱 Hold your phone 6-12 inches from your mouth</li>
+                <li>🔇 Record in a quiet environment when possible</li>
+                <li>🎯 Speak clearly and at a normal pace</li>
+                <li>✅ Fill out all three fields before recording</li>
+                <li>📶 Make sure you have internet connection for upload</li>
+                <li>🔋 Keep your phone charged (recording uses battery)</li>
+            </ul>
+        </div>
+
+        <!-- SUPPORT -->
+        <div class="support-box">
+            <h3>❓ Need Help?</h3>
+            <p style="font-size: 1.1em; margin-top: 10px;">
+                Contact your training coordinator or IT support<br>
+                for assistance with setup or troubleshooting.
+            </p>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p><strong>© 2025 Steamfitters Local 449</strong></p>
+            <p style="margin-top: 10px;">Voice Recorder Tool • Training & Development</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                <strong>Your recordings help improve apprentice training!</strong>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
