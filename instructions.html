@@ -162,9 +162,62 @@
         .footer {
             text-align: center;
             margin-top: 40px;
-            padding-top: 20px;
+            padding-top: 30px;
             border-top: 2px solid #ddd;
+        }
+
+        .inspired-by {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .inspired-by-text {
+            font-size: 1.1em;
+            font-style: italic;
             color: #666;
+        }
+
+        .logo-img {
+            max-height: 60px;
+            width: auto;
+        }
+
+        .developed-usa {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .usa-flag {
+            width: 35px;
+            height: auto;
+        }
+
+        .copyright {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+
+        .pixeled-logo {
+            max-height: 50px;
+            width: auto;
         }
 
         .support-box {
@@ -205,6 +258,12 @@
             .qr-code img {
                 width: 250px;
                 height: 250px;
+            }
+            .inspired-by {
+                flex-direction: column;
+            }
+            .copyright {
+                flex-direction: column;
             }
         }
     </style>
@@ -305,10 +364,26 @@
 
         <!-- FOOTER -->
         <div class="footer">
-            <p><strong>© 2025 Steamfitters Local 449</strong></p>
-            <p style="margin-top: 10px;">Voice Recorder Tool • Training & Development</p>
-            <p style="margin-top: 10px; font-size: 0.9em;">
-                <strong>Your recordings help improve apprentice training!</strong>
+            <!-- INSPIRED BY -->
+            <div class="inspired-by">
+                <span class="inspired-by-text">Inspired by</span>
+                <img src="greatlakes-logo.png" alt="Great Lakes Educational Group" class="logo-img">
+            </div>
+
+            <!-- DEVELOPED IN USA -->
+            <div class="developed-usa">
+                <span>DEVELOPED IN THE USA</span>
+                <img src="https://flagcdn.com/w40/us.png" alt="USA Flag" class="usa-flag">
+            </div>
+
+            <!-- COPYRIGHT -->
+            <div class="copyright">
+                <span>Copyright © 2025</span>
+                <img src="pixeled-logo.png" alt="PixelED Path LLC" class="pixeled-logo">
+            </div>
+
+            <p style="margin-top: 20px; font-size: 0.95em; color: #666;">
+                Voice Recorder Tool • Training & Development
             </p>
         </div>
     </div>

@@ -269,9 +269,64 @@
             background: #000;
             color: #FFB612;
             text-align: center;
-            padding: 15px;
+            padding: 25px 15px;
             font-size: 0.85em;
             margin-top: auto;
+        }
+
+        .inspired-by {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .inspired-by-text {
+            font-size: 0.95em;
+            font-style: italic;
+            color: #FFB612;
+        }
+
+        .logo-img {
+            max-height: 45px;
+            width: auto;
+        }
+
+        .developed-usa {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 0.95em;
+            color: #FFB612;
+            margin: 15px 0;
+        }
+
+        .usa-flag {
+            width: 28px;
+            height: auto;
+        }
+
+        .copyright {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 182, 18, 0.3);
+            color: #FFB612;
+            font-size: 0.9em;
+        }
+
+        .pixeled-logo {
+            max-height: 40px;
+            width: auto;
         }
 
         .visualizer {
@@ -297,6 +352,9 @@
             .timer { font-size: 3em; }
             .record-btn { width: 150px; height: 150px; font-size: 3em; }
             .btn { min-width: 120px; padding: 12px 20px; font-size: 0.9em; }
+            .inspired-by { flex-direction: column; gap: 8px; }
+            .developed-usa { font-size: 0.85em; }
+            .copyright { flex-direction: column; gap: 8px; }
         }
     </style>
 </head>
@@ -352,7 +410,27 @@
     </div>
 
     <div class="footer">
-        © 2025 Steamfitters Local 449 • Voice Recorder Tool
+        <!-- INSPIRED BY -->
+        <div class="inspired-by">
+            <span class="inspired-by-text">Inspired by</span>
+            <img src="greatlakes-logo.png" alt="Great Lakes Educational Group" class="logo-img">
+        </div>
+
+        <!-- DEVELOPED IN USA -->
+        <div class="developed-usa">
+            <span>DEVELOPED IN THE USA</span>
+            <img src="https://flagcdn.com/w40/us.png" alt="USA Flag" class="usa-flag">
+        </div>
+
+        <!-- COPYRIGHT -->
+        <div class="copyright">
+            <span>Copyright © 2025</span>
+            <img src="pixeled-logo.png" alt="PixelED Path LLC" class="pixeled-logo">
+        </div>
+
+        <p style="margin-top: 15px; font-size: 0.85em; opacity: 0.8;">
+            Voice Recorder Tool • Training & Development
+        </p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
