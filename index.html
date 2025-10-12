@@ -175,6 +175,33 @@
             transform: scale(0.95);
         }
 
+        .playback-section {
+            width: 100%;
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid #2ecc71;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .playback-section.active {
+            display: block;
+        }
+
+        .playback-title {
+            color: #2ecc71;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .playback-audio {
+            width: 100%;
+            margin: 15px 0;
+        }
+
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -198,6 +225,12 @@
             background: linear-gradient(45deg, #FFB612, #D4AF37);
             color: #000;
             box-shadow: 0 4px 15px rgba(255, 182, 18, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
         }
 
         .btn-danger {
@@ -355,6 +388,7 @@
             .inspired-by { flex-direction: column; gap: 8px; }
             .developed-usa { font-size: 0.85em; }
             .copyright { flex-direction: column; gap: 8px; }
+            .action-buttons { flex-direction: column; }
         }
     </style>
 </head>
@@ -390,9 +424,17 @@
             </div>
         </div>
 
-        <div class="action-buttons">
-            <button class="btn btn-primary" id="uploadBtn" disabled>☁️ Upload to Dashboard</button>
-            <button class="btn btn-danger" id="deleteBtn" disabled>🗑️ Delete</button>
+        <!-- PLAYBACK SECTION (NEW!) -->
+        <div class="playback-section" id="playbackSection">
+            <div class="playback-title">🎧 Review Your Recording</div>
+            <p style="text-align: center; margin-bottom: 15px; opacity: 0.9;">
+                Listen to your recording before uploading
+            </p>
+            <audio class="playback-audio" id="playbackAudio" controls></audio>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="confirmUploadBtn">✅ Sounds Good - Upload</button>
+                <button class="btn btn-secondary" id="reRecordBtn">🔄 Re-Record</button>
+            </div>
         </div>
 
         <div class="instructions">
@@ -404,25 +446,22 @@
             <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.9;">
                 💡 Maximum recording time: 15 minutes<br>
                 💡 Fill out all fields before recording<br>
-                💡 Recordings upload automatically after stopping
+                💡 Review your recording before uploading
             </p>
         </div>
     </div>
 
     <div class="footer">
-        <!-- INSPIRED BY -->
         <div class="inspired-by">
             <span class="inspired-by-text">Inspired by</span>
             <img src="greatlakes-logo.png" alt="Great Lakes Educational Group" class="logo-img">
         </div>
 
-        <!-- DEVELOPED IN USA -->
         <div class="developed-usa">
             <span>DEVELOPED IN THE USA</span>
             <img src="https://flagcdn.com/w40/us.png" alt="USA Flag" class="usa-flag">
         </div>
 
-        <!-- COPYRIGHT -->
         <div class="copyright">
             <span>Copyright © 2025</span>
             <img src="pixeled-logo.png" alt="PixelED Path LLC" class="pixeled-logo">
@@ -439,7 +478,6 @@
         const SUPABASE_URL = 'https://dfneumnqaxfdmtkzqezm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmV1bW5xYXhmZG10a3pxZXptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwOTUyNDksImV4cCI6MjA3NTY3MTI0OX0.XM-zDV1Ne8izUJFDGR6_6jRa5HHqCPc9Jho9f5YsGNM';
 
-        // Initialize Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const app = {
@@ -466,8 +504,8 @@
                     }
                 });
 
-                document.getElementById('uploadBtn').addEventListener('click', () => this.uploadRecording());
-                document.getElementById('deleteBtn').addEventListener('click', () => this.deleteRecording());
+                document.getElementById('confirmUploadBtn').addEventListener('click', () => this.uploadRecording());
+                document.getElementById('reRecordBtn').addEventListener('click', () => this.reRecord());
 
                 const savedInstructor = localStorage.getItem('local449_instructor');
                 const savedGroup = localStorage.getItem('local449_group');
@@ -528,6 +566,9 @@
             async startRecording() {
                 if (!this.validateForm()) return;
 
+                // Hide playback section if visible
+                document.getElementById('playbackSection').classList.remove('active');
+
                 try {
                     this.stream = await navigator.mediaDevices.getUserMedia({ 
                         audio: {
@@ -556,9 +597,9 @@
 
                     this.mediaRecorder.onstop = () => {
                         this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-                        document.getElementById('uploadBtn').disabled = false;
-                        document.getElementById('deleteBtn').disabled = false;
-                        this.uploadRecording();
+                        
+                        // Show playback section instead of auto-uploading
+                        this.showPlayback();
                     };
 
                     this.mediaRecorder.start(1000);
@@ -602,6 +643,46 @@
 
                     document.getElementById('visualizer').style.display = 'none';
                 }
+            },
+
+            showPlayback() {
+                const playbackSection = document.getElementById('playbackSection');
+                const playbackAudio = document.getElementById('playbackAudio');
+                
+                // Create URL for the audio blob
+                const audioUrl = URL.createObjectURL(this.audioBlob);
+                playbackAudio.src = audioUrl;
+                
+                // Show the playback section
+                playbackSection.classList.add('active');
+                
+                // Update status
+                this.updateStatus('Recording complete! Review below', 'success');
+                
+                // Scroll to playback section
+                playbackSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            },
+
+            reRecord() {
+                // Clear the current recording
+                if (this.audioBlob) {
+                    URL.revokeObjectURL(document.getElementById('playbackAudio').src);
+                }
+                
+                this.audioBlob = null;
+                this.audioChunks = [];
+                
+                // Hide playback section
+                document.getElementById('playbackSection').classList.remove('active');
+                
+                // Reset timer
+                document.getElementById('timer').textContent = '00:00';
+                
+                // Update status
+                this.updateStatus('Ready to record again', 'ready');
+                
+                // Scroll back to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 
             startTimer() {
@@ -648,6 +729,9 @@
                     return;
                 }
 
+                // Hide playback section
+                document.getElementById('playbackSection').classList.remove('active');
+
                 this.updateStatus('Uploading...', 'uploading');
                 document.getElementById('progressBar').classList.add('active');
 
@@ -693,25 +777,28 @@
                         this.updateStatus('✅ Upload successful!', 'success');
                         document.getElementById('progressBar').classList.remove('active');
                         document.getElementById('progressFill').style.width = '0%';
-                        setTimeout(() => this.deleteRecording(true), 2000);
+                        
+                        // Clean up and reset
+                        URL.revokeObjectURL(document.getElementById('playbackAudio').src);
+                        this.audioBlob = null;
+                        this.audioChunks = [];
+                        document.getElementById('timer').textContent = '00:00';
+                        
+                        // Show success for 3 seconds, then reset
+                        setTimeout(() => {
+                            this.updateStatus('Ready to Record', '');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 3000);
                     }, 500);
 
                 } catch (error) {
                     console.error('Upload error:', error);
                     this.updateStatus('Upload failed: ' + error.message, 'error');
                     document.getElementById('progressBar').classList.remove('active');
+                    
+                    // Show playback section again so they can retry
+                    document.getElementById('playbackSection').classList.add('active');
                 }
-            },
-
-            deleteRecording(silent = false) {
-                if (!silent && !confirm('Delete this recording?')) return;
-                
-                this.audioBlob = null;
-                this.audioChunks = [];
-                document.getElementById('timer').textContent = '00:00';
-                this.updateStatus('Ready to Record', '');
-                document.getElementById('uploadBtn').disabled = true;
-                document.getElementById('deleteBtn').disabled = true;
             }
         };
 
